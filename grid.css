@@ -6,6 +6,7 @@
   --max-width: 1280px;
   --columns: 12;
 
+  --small-max-column-width: calc(100vw - var(--page-margin) * 2 - var(--gutter) * (var(--columns) - 1)) / var(--columns);
   --max-column-width: calc((var(--max-width) - var(--page-margin) * 2 - var(--gutter) * (var(--columns) - 1)) / var(--columns)); 
 }
 
@@ -38,6 +39,36 @@
   align-content: end;
 }
 
+/* horizontal align (removes columns, sizes based on min-content) */
+.gl-grid.gl-grid--center {
+  justify-content: center;
+  grid-template-columns: initial;
+}
+
+.gl-grid.gl-grid--right {
+  justify-content: end;
+  grid-template-columns: initial;
+}
+
+.gl-grid--center > *,
+.gl-grid--right > * {
+  min-width: auto;
+  grid-column: initial;
+}
+
+@for $i from 1 to 12 {
+  .gl-grid--center > .gl-grid__item--$i,
+  .gl-grid--right > .gl-grid__item--$i {
+      width: calc(var(--small-max-column-width) * $i + (var(--gutter) * ($i - 1)));
+  }
+
+  @media (min-width: 1280px) {
+    .gl-grid--center > .gl-grid__item--$i,
+    .gl-grid--right > .gl-grid__item--$i {
+      width: calc(var(--max-column-width) * $i + (var(--gutter) * ($i - 1)));
+    }
+  }
+}
 /**
  * There's no good way to mark individual cells to stretch vertically, instead the rules need to be
  * defined at the parent level
