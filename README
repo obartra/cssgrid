@@ -1,0 +1,81 @@
+# CSS-Grid 12-Column Layout System
+
+## Rationale
+
+The goal of this demo was to explore the feasibility of CSS grids for implementing a column-based layout system.
+
+### Pros
+
+- Short code
+
+### Cons
+
+[Browser support](https://caniuse.com/#feat=css-grid): No real work around
+
+Horizontal alignment: Needs further exploration
+
+[subgrid support](https://rachelandrew.co.uk/archives/2016/04/25/a-revised-subgrid-specification/): The current layout works around it redefining the number of columns when combining a sized item with a grid
+
+Offsets: The current layout works around it by using absolute positioning
+
+## Usage
+
+Any element can become part of the grid system by adding the `.gl-grid` class. Items within the grid are sized with `.gl-grid__item--{number}` where `{number}` is a 1-12 value indicating the number of columns.
+
+Elements flow horizontally and are sized to the minimum height of the row.
+
+![](./images/flow.png)
+
+Elements are positioned automatically but if there needs to be space between elements you can position them absolutely. To do that add the class `.gl-grid__item--position-{number}` where `{number}` indicates the column at which the element starts.
+
+![](./images/position.png)
+
+Elements can be nested and respect the layout of the parent column if they don't change the size of their box. For instance a subgrid within an element of size 9 would be defined as follows:
+
+```html
+<div class="gl-grid">
+  <!-- ... -->
+  <div class="gl-grid gl-grid__item-6">
+    <div class="gl-grid__item-3">C</div>
+    <div class="gl-grid__item-3">D</div>
+  </div>
+</div>
+```
+
+And would look like:
+
+![](./images/nested.png)
+
+An alternative, fraction-based layout is also available. For instance, if we wanted to distribute 2 elements evenly (regardless of their column size), we could do:
+
+```html
+<div class="gl-grid--2fr">
+  <div class="gl-grid__item-1">C</div>
+  <div class="gl-grid__item-1">D</div>
+</div>
+```
+
+The `fr` in the class name indicates it's fraction based and the number the number of "parts". Elements don't have to be evenly distributed, for instance if the first element takes 3 / 4 and the second one 1 / 4 we would define it as:
+
+```html
+<div class="gl-grid--4fr">
+  <div class="gl-grid__item-3">C</div>
+  <div class="gl-grid__item-1">D</div>
+</div>
+```
+
+Vertical alignment defaults to the top but can be changed to middle by adding `.gl-grid--middle` to the parent container or to the bottom with `.gl-grid--bottom`.
+
+![](./images/vertical.png)
+
+## Setup
+
+`grid.css` contains the layout system used for this demo. The result can be viewed using the compiled css.
+
+```bash
+$ yarn && yarn build
+```
+
+And then open `index.html`.
+
+You can watch for changes with `yarn watch`.

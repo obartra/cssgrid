@@ -1,0 +1,135 @@
+:root {
+  --gutter: 20px;
+  --min-row-height: var(--gutter);
+  --vertical-gutter: var(--gutter);
+  --page-margin: 50px;
+  --max-width: 1280px;
+  --columns: 12;
+
+  --max-column-width: calc((var(--max-width) - var(--page-margin) * 2 - var(--gutter) * (var(--columns) - 1)) / var(--columns)); 
+}
+
+.gl-grid-root {
+  display: grid;
+}
+
+.gl-grid-content {
+  justify-self: center;
+  margin-left: var(--page-margin);
+  margin-right: var(--page-margin);
+  max-width: var(--max-width);
+}
+
+.gl-grid {
+  display: grid;
+  grid-column-gap: var(--gutter);
+  grid-row-gap: var(--vertical-gutter);
+  grid-template-columns: repeat(var(--columns), minmax(min-content, 1fr));
+  grid-auto-flow: row;
+  align-content: start;
+}
+
+/* vertical align */
+.gl-grid--middle {
+  align-content: center;
+}
+
+.gl-grid--bottom {
+  align-content: end;
+}
+
+/**
+ * There's no good way to mark individual cells to stretch vertically, instead the rules need to be
+ * defined at the parent level
+ */
+
+/* vertical layout, first and last take their minimum size, the middle one stretches */
+.gl-grid--1-stretch-1 {
+  grid-template-columns: minmax(min-content, 1fr);
+  grid-template-rows: min-content 1fr min-content;
+  grid-auto-flow: column;
+}
+
+/**
+ *
+ * The following loop is needed because `subgrid` or `contents` is not yet well supported.
+ * This changes the size of the grid for each child item, so a child item of size 3 becomes a
+ * 3-column grid. This way the parent grid is preserved 
+ *
+ * Once support is improved, this loop could be replaced with just:
+ *
+ * .gl-grid .gl-grid {
+ *    display: subgrid;
+ * }
+ */
+@for $i from 1 to 12 {
+  .gl-grid.gl-grid__item--$i {
+    grid-template-columns: repeat($i, minmax(min-content, 1fr));
+  }
+}
+
+/* variables are not allowed in media queries */
+@media (min-width: 1280px) {
+  .gl-grid {
+    grid-template-columns: repeat(var(--columns), minmax(min-content, var(--max-column-width)));
+  }
+
+  @for $i from 1 to 12 {
+    .gl-grid.gl-grid__item--$i {
+      grid-template-columns: repeat($i, minmax(min-content, var(--max-column-width)));
+    }
+  }
+
+  .gl-grid--1-stretch-1 {
+    grid-template-columns: minmax(min-content, minmax(min-content, var(--max-column-width)));
+  }
+}
+/**
+ *
+ * The following loop allows an alternative (fraction-based) layout. For instance if we have 4 items
+ * all evenly distributed we would add the `gl-grid--4fr` class to the parent and `gl-grid__item--1`
+ * to each child.
+ *
+ * Different proportions can be specified by using different parent fractions and child sizes
+ *
+ * The number of fractions allowed is unrelated to the number of columns this layout supports but I
+ * has no reason for them to differ either
+ */
+@for $i from 1 to 12 {
+  .gl-grid--$(i)fr {
+    grid-auto-rows: 1fr;
+    grid-template-columns: repeat($i, 1fr);
+  }
+}
+
+/**
+ *
+ * one day we'll just do this:
+ *
+ * .gl-grid > * {
+ *   grid-column-end: span attr(size integer);
+ * }
+ *
+ * which would allow us to define size with just `<div size="4">`. In the meantime we need to use
+ * classes (and another loop)
+ */
+@for $i from 1 to 12 {
+  .gl-grid__item--$i {
+    grid-column-end: span $i;
+  }
+}
+
+/**
+ *
+ * I couldn't figure out how to add offsets the same way we add `span` for sizing so any offset is
+ * created by manually specifying the position
+ *
+ * So if I have 1 element at the start of the row of size 1 and I wanted a space in between that one
+ * and the next one, I would add the position `3` to the latter.
+ *
+ */
+@for $i from 1 to 12 {
+  .gl-grid__item--position-$i {
+    grid-column-start: $i;
+  }
+}

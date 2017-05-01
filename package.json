@@ -1,0 +1,22 @@
+{
+  "name": "grid",
+  "version": "1.0.0",
+  "description": "Grid system",
+  "main": "index.js",
+  "repository": {},
+  "author": "Oscar Bartra",
+  "license": "MIT",
+  "devDependencies": {
+    "cross-env": "4.0.0",
+    "cssnano": "3.10.0",
+    "nodemon": "1.11.0",
+    "postcss-cli": "3.2.0",
+    "postcss-for": "2.1.1"
+  },
+  "scripts": {
+    "watch": "nodemon -e css --watch *.css --ignore dist/ -x \"yarn build:dev\"",
+    "build": "yarn build:dev && yarn build:prod",
+    "build:dev": "postcss -c postcss.config.js -o dist/grid.build.css grid.css",
+    "build:prod": "cross-env NODE_ENV=production postcss -c postcss.config.js -o dist/grid.min.css grid.css"
+  }
+}
